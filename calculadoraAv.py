@@ -1,5 +1,9 @@
-def separador(texto):
-  texto = texto.lower().strip().replace(" ", "")
-  
+import re
 
-conta = input("Digite a equação: ")
+
+def separador(texto):
+	pass
+
+
+
+print(separador(input("Digite a equação: ")))
