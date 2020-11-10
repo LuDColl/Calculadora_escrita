@@ -3,4 +3,3 @@ def separador(texto):
   
 
 conta = input("Digite a equação: ")
-ç
