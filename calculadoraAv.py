@@ -5,7 +5,75 @@ contas = {
     "/": lambda op1, op2: op1 / op2
 }
 
-operadores = ["(", ")", "+", "-", "*", "/"]
+
+operadores = ["*", "/"]
+sinais = ["+", "-"]
+parenteses = ["(", ")"]
+
+operandos = operadores + sinais
+prioridades = operadores + sinais + parenteses
+
+
+def separador(texto):
+    for x in prioridades:
+        texto = texto.replace(x, " " + x + " ")
+        texto = texto.replace("  ", " ")
+    return texto.strip().split(" ")
+
+
+def sinalizador(texto):
+    indice = 1
+    while indice < len(texto):
+        if texto[indice] in sinais and texto[indice - 1] in sinais:
+            if texto[indice] == texto[indice - 1]:
+                del texto[indice]
+            else:
+                texto[indice - 1] = "-"
+                del texto[indice]
+            indice = 1
+        indice += 1
+    indice = 1
+    while indice < len(texto):
+        if texto[indice] in sinais and texto[indice - 1] in operadores:
+            if texto[indice] == "+":
+                del texto[indice]
+            if texto[indice] == "-" and isinstance(texto[indice + 1], float):
+                del texto[indice]
+                texto[indice] *= -1
+        indice += 1
+    if texto[0] == "+":
+        del texto[0]
+    if texto[0] == "-" and isinstance(texto[1], float):
+        del texto[0]
+        texto[0] *= -1
+    return texto
+
+
+def numerador(texto):
+    indice = 0
+    while indice < len(texto):
+        if not texto[indice] in prioridades:
+            texto[indice] = float(texto[indice])
+        indice += 1
+    return texto
+
+
+def ordenador(texto):
+    indice = len(texto) - 1
+    while indice >= 0:
+        if texto[indice] == "(":
+            del texto[indice]
+            texto[indice] = ordem(sinalizador(texto[indice:]))[0]
+            indice += 1
+            for x in texto[indice:]:
+                if x == ")":
+                    del texto[indice]
+                    texto = sinalizador(texto)
+                    break
+                del texto[indice]
+            indice = len(texto) - 1
+        indice -= 1
+    return texto
 
 
 def conta(texto, operador):
@@ -31,22 +99,6 @@ def conta(texto, operador):
     return texto
 
 
-def separador(texto):
-    for x in operadores:
-        texto = texto.replace(x, " " + x + " ")
-        texto = texto.replace("  ", " ")
-    return texto.strip().split(" ")
-
-
-def numerador(texto):
-    indice = 0
-    while indice < len(texto):
-        if not texto[indice] in operadores:
-            texto[indice] = float(texto[indice])
-        indice += 1
-    return texto
-
-
 def ordem(texto):
     texto = conta(texto, "*")
     texto = conta(texto, "/")
@@ -54,35 +106,32 @@ def ordem(texto):
     return conta(texto, "-")
 
 
-def aspas(texto):
-    indice = len(texto) - 1
-    while indice >= 0:
-        if texto[indice] == "(":
-            del texto[indice]
-            texto[indice] = ordem(texto[indice:])[0]
-            indice += 1
-            for x in texto[indice:]:
-                if x == ")":
-                    del texto[indice]
-                    break
-                del texto[indice]
-            indice = len(texto) - 1
-        indice -= 1
-    return texto
-
-
 def calculadoraAv(texto):
     texto = separador(texto)
+    print("Pós separador:")
+    print(texto)
+    print("")
+
     texto = numerador(texto)
-    texto = aspas(texto)
+    print("Pós numerador")
+    print(texto)
+    print("")
+
+    texto = sinalizador(texto)
+    print("Pós sinalizador:")
+    print(texto)
+    print("")
+
+    texto = ordenador(texto)
+    print("Pós ordenador")
+    print(texto)
+    print("")
+
     return ordem(texto)[0]
 
 
-equacao = input("Digite a equação: ")
-
-
 numeros = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "."]
-valores = numeros + operadores
+valores = numeros + prioridades
 
 
 def existe(texto):
@@ -138,23 +187,37 @@ def ordem_dos_parenteses(texto):
     return True
 
 
-def vazio(texto):
+def ordem_dos_operandos(texto):
     indice = 1
-    while len(texto) > 1 and indice < len(texto):
-        if texto[indice - 1] == "(":
-            if texto[indice] in operadores:
-                if texto[indice] != "(":
-                    return False
+    while indice < len(texto):
+        if texto[indice] in operadores and texto[indice - 1] in prioridades:
+            return False
+        indice += 1
+    return True
+
+
+def vazio(texto):
+    indice = 0
+    while indice < len(texto):
+        if texto[indice] == ")" and (texto[indice - 1] == "(" or texto[indice - 1] in operandos):
+            return False
         indice += 1
     return True
 
 
 def verificacao(texto):
+    print("")
     while True:
-        if existe(texto) and decimal(texto) and quantidade_de_parenteses(texto) and ordem_dos_parenteses(texto) and vazio(texto):
+        if existe(texto) and decimal(texto) and quantidade_de_parenteses(texto) and ordem_dos_parenteses(texto) and ordem_dos_operandos(texto) and vazio(texto):
             break
-        print(existe(texto), decimal(texto), quantidade_de_parenteses(texto), ordem_dos_parenteses(texto), vazio(texto))
+        print("Existe: " + str(existe(texto)) + ", Decimal válido: " + str(decimal(texto)) + ", Quantidade de parenteses iguais: " + str(quantidade_de_parenteses(
+            texto)) + ", Ordem dos parênteses correta: " + str(ordem_dos_parenteses(texto)) + ", Ordem dos operadores correta: " + str(ordem_dos_operandos(texto)) + ", Não há parenteses vazios: " + str(vazio(texto)))
+        print("")
         texto = input("Equação inválida, digite novamente: ")
+    print("Existe: " + str(existe(texto)) + ", Decimal válido: " + str(decimal(texto)) + ", Quantidade de parenteses iguais: " + str(quantidade_de_parenteses(
+        texto)) + ", Ordem dos parênteses correta: " + str(ordem_dos_parenteses(texto)) + ", Ordem dos operadores correta: " + str(ordem_dos_operandos(texto)) + ", Não há parenteses vazios: " + str(vazio(texto)))
+    print("")
     return texto
 
-print(calculadoraAv(verificacao(equacao)))
+
+print(calculadoraAv(verificacao(input("Digite a equação: "))))
