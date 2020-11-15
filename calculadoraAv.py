@@ -81,27 +81,83 @@ def calculadoraAv(texto):
 equacao = input("Digite a equação: ")
 
 
-numeros = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
+numeros = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "."]
 valores = numeros + operadores
 
 
-def verificacao(equacao):
-    indice = 0
+def existe(texto):
+    for caractere in texto:
+        if not caractere in valores:
+            return False
+    return True
+
+
+def decimal(texto):
+    indice = 1
+    while len(texto) > 2 and indice < len(texto):
+        if texto[indice] == ".":
+            if not texto[indice - 1] in numeros:
+                return False
+            elif texto[indice - 1] == ".":
+                return False
+            if not texto[indice + 1] in numeros:
+                return False
+            elif texto[indice + 1] == ".":
+                return False
+        indice += 1
+    return True
+
+
+def quantidade_de_parenteses(texto):
     abre_parenteses = 0
     fecha_parenteses = 0
-    while indice < len(equacao):
-        if not equacao[indice] in valores:
-            equacao = input("Equação inválida, digite novamente: ")
-            indice = 0
-        if equacao[indice] == "(":
+    for caractere in texto:
+        if caractere == "(":
             abre_parenteses += 1
-        if equacao[indice] == ")":
+    for caractere in texto:
+        if caractere == ")":
             fecha_parenteses += 1
-        indice += 1
     if abre_parenteses != fecha_parenteses:
-        equacao = input("Equação inválida, digite novamente: ")
-        indice = 0
-    return equacao
+        return False
+    return True
+
+
+def ordem_dos_parenteses(texto):
+    ordem = bool(0)
+    for caractere in texto:
+        if caractere == "(":
+            ordem = 1
+            break
+        elif caractere == ")":
+            return False
+    indice = len(texto) - 1
+    while indice >= 0:
+        if texto[indice] == ")":
+            ordem = 1
+            break
+        elif texto[indice] == "(":
+            return False
+        indice -= 1
+    return ordem
+
+
+def vazio(texto):
+    indice = 1
+    while len(texto) > 1 and indice < len(texto):
+        if texto[indice - 1] == "(":
+            if texto[indice] in operadores:
+                if texto[indice] != "(":
+                    return False
+        indice += 1
+    return True
+
+
+def verificacao(texto):
+    while True:
+        if existe(texto) and decimal(texto) and quantidade_de_parenteses(texto) and ordem_dos_parenteses(texto) and vazio(texto):
+            break
+        texto = input("Equação inválida, digite novamente: ")
+    return texto
 
 
 print(calculadoraAv(verificacao(equacao)))
