@@ -153,6 +153,7 @@ def verificacao(texto):
     while True:
         if existe(texto) and decimal(texto) and quantidade_de_parenteses(texto) and ordem_dos_parenteses(texto) and vazio(texto):
             break
+        print(existe(texto), decimal(texto), quantidade_de_parenteses(texto), ordem_dos_parenteses(texto), vazio(texto))
         texto = input("Equação inválida, digite novamente: ")
     return texto
 
