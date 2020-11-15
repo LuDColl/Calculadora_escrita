@@ -123,22 +123,19 @@ def quantidade_de_parenteses(texto):
 
 
 def ordem_dos_parenteses(texto):
-    ordem = bool(0)
     for caractere in texto:
         if caractere == "(":
-            ordem = 1
             break
         elif caractere == ")":
             return False
     indice = len(texto) - 1
     while indice >= 0:
         if texto[indice] == ")":
-            ordem = 1
             break
         elif texto[indice] == "(":
             return False
         indice -= 1
-    return ordem
+    return True
 
 
 def vazio(texto):
@@ -158,6 +155,5 @@ def verificacao(texto):
             break
         texto = input("Equação inválida, digite novamente: ")
     return texto
-
 
 print(calculadoraAv(verificacao(equacao)))
