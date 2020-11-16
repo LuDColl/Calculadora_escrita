@@ -131,7 +131,8 @@ def calculadoraAv(texto):
     print("Pós ordenador")
     print(texto)
     print("")
-
+    
+    print("Resposta: ")
     return ordem(texto)[0]
 
 
