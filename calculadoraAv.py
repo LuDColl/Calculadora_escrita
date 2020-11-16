@@ -87,6 +87,7 @@ def conta(texto, operador):
                 texto[indice - 1], texto[indice])
             del texto[indice]
             indice -= 1
+            continue
         if texto[indice] == ")":
             if operador == "-":
                 del texto[indice]
@@ -98,6 +99,7 @@ def conta(texto, operador):
             del texto[indice]
             del texto[indice]
             indice -= 1
+            continue
         indice += 1
     return texto
 
@@ -149,15 +151,10 @@ def existe(texto):
 def decimal(texto):
     indice = 1
     while len(texto) > 2 and indice < len(texto):
-        if texto[indice] == ".":
-            if not texto[indice - 1] in numeros:
-                return False
-            elif texto[indice - 1] == ".":
-                return False
-            if not texto[indice + 1] in numeros:
-                return False
-            elif texto[indice + 1] == ".":
-                return False
+        condicao = bool(texto[indice] == "." and (not texto[indice - 1] in numeros or texto[indice - 1]
+            == "." or not texto[indice + 1] in numeros or texto[indice + 1] == "."))
+        if condicao:
+            return False
         indice += 1
     return True
 
@@ -168,7 +165,6 @@ def quantidade_de_parenteses(texto):
     for caractere in texto:
         if caractere == "(":
             abre_parenteses += 1
-    for caractere in texto:
         if caractere == ")":
             fecha_parenteses += 1
     if abre_parenteses != fecha_parenteses:
@@ -194,17 +190,14 @@ def ordem_dos_parenteses(texto):
 
 def ordem_dos_operandos(texto):
     indice = 1
+    if texto[-1] in operandos:
+        return False
     while indice < len(texto):
-        if texto[indice] in operadores and texto[indice - 1] in prioridades:
+        condicao = bool((texto[indice] in operadores and (texto[indice - 1] in operandos or texto[indice - 1] == "("))
+                        or (texto[indice] in operandos and (texto[indice + 1] in operadores or texto[indice + 1] == ")")))
+        if condicao:
             return False
         indice += 1
-    indice = len(texto) - 1
-    while indice >= 0:
-        if texto[indice] in numeros:
-            break
-        else:
-            return False
-        indice -= 1
     return True
 
 
@@ -220,7 +213,9 @@ def vazio(texto):
 def verificacao(texto):
     print("")
     while True:
-        if existe(texto) and decimal(texto) and quantidade_de_parenteses(texto) and ordem_dos_parenteses(texto) and ordem_dos_operandos(texto) and vazio(texto):
+        condicao = bool(existe(texto) and decimal(texto) and quantidade_de_parenteses(
+            texto) and ordem_dos_parenteses(texto) and ordem_dos_operandos(texto) and vazio(texto))
+        if condicao:
             break
         print("Existe: " + str(existe(texto)) + ", Decimal válido: " + str(decimal(texto)) + ", Quantidade de parenteses iguais: " + str(quantidade_de_parenteses(
             texto)) + ", Ordem dos parênteses correta: " + str(ordem_dos_parenteses(texto)) + ", Ordem dos operadores correta: " + str(ordem_dos_operandos(texto)) + ", Não há parenteses vazios: " + str(vazio(texto)))
