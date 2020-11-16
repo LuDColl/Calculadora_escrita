@@ -26,26 +26,29 @@ def sinalizador(texto):
     while indice < len(texto):
         if texto[indice] in sinais and texto[indice - 1] in sinais:
             if texto[indice] == texto[indice - 1]:
+                texto[indice - 1] = "+"
                 del texto[indice]
             else:
                 texto[indice - 1] = "-"
                 del texto[indice]
             indice = 1
-        indice += 1
-    indice = 1
-    while indice < len(texto):
+            continue
         if texto[indice] in sinais and texto[indice - 1] in operadores:
             if texto[indice] == "+":
                 del texto[indice]
             if texto[indice] == "-" and isinstance(texto[indice + 1], float):
                 del texto[indice]
                 texto[indice] *= -1
+        if texto[0] == "+" and isinstance(texto[1], float):
+            del texto[0]
+            indice = 1
+            continue
+        if texto[0] == "-" and isinstance(texto[1], float):
+            del texto[0]
+            texto[0] *= -1
+            indice = 1
+            continue
         indice += 1
-    if texto[0] == "+":
-        del texto[0]
-    if texto[0] == "-" and isinstance(texto[1], float):
-        del texto[0]
-        texto[0] *= -1
     return texto
 
 
@@ -135,6 +138,8 @@ valores = numeros + prioridades
 
 
 def existe(texto):
+    if texto == "":
+        return False
     for caractere in texto:
         if not caractere in valores:
             return False
@@ -193,6 +198,13 @@ def ordem_dos_operandos(texto):
         if texto[indice] in operadores and texto[indice - 1] in prioridades:
             return False
         indice += 1
+    indice = len(texto) - 1
+    while indice >= 0:
+        if texto[indice] in numeros:
+            break
+        else:
+            return False
+        indice -= 1
     return True
 
 
